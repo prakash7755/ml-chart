@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>Line Chart</title>
+	 <script src="/data.js"></script>
+	 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.0/moment.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+	<style>
+		canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div style="width:75%;">
+		<canvas id="canvas"></canvas>
+	</div>
+	<br>
+	
+	<script>
+
+		const { chartData } =  window;
+		let tempData = {
+
+		};
+
+
+		for (let x of chartData) {
+			const { UpdateTime, Img_id = {} } = x;
+			const imageId = Img_id.$oid;
+
+			if (!tempData[UpdateTime]) {
+				tempData[UpdateTime] = 0;
+			}
+
+			if (imageId) {
+				tempData[UpdateTime] = tempData[UpdateTime] + 1
+			}
+
+		}
+		const labels = [];
+		const yData = [];
+
+		for (let [x, y] of Object.entries(tempData)) {
+			labels.push(new Date(x));
+			yData.push(y)
+		}
+
+		var timeFormat = 'MM/DD/YYYY HH:mm';
+
+		function newDate(days) {
+			return moment().add(days, 'd').toDate();
+		}
+
+		function newDateString(days) {
+			return moment().add(days, 'd').format(timeFormat);
+		}
+
+		var config = {
+			type: 'line',
+			data: {
+				labels,
+				datasets: [{
+					label: 'My First dataset',
+					fill: false,
+					data: yData,
+				}]
+			},
+			options: {
+				title: {
+					text: 'Chart.js Time Scale'
+				},
+				scales: {
+					xAxes: [{
+						type: 'time',
+						time: {
+							format: timeFormat,
+							// round: 'day'
+							tooltipFormat: 'll HH:mm'
+						},
+						scaleLabel: {
+							display: true,
+							labelString: 'Date'
+						}
+					}],
+					yAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'value'
+						}
+					}]
+				},
+			}
+		};
+
+		
+	
+	var ctx = document.getElementById('canvas').getContext('2d');
+			const MyChart = new Chart(ctx, config);
+	</script>
+</body>
+
+</html>
